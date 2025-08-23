@@ -1,0 +1,4 @@
+this is a destination file
+written in txt format
+with the purpose of fulfilling the 
+assignment questions
