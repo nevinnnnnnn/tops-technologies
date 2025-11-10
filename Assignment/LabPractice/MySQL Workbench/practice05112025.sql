@@ -36,3 +36,17 @@ select customer_id, cust_name from customer where customer_id in (select custome
 select * from products;
 
 select product_name, price from products where price between 21 and 100;
+
+show tables;
+
+select distinct category from products;
+
+select * from orders where customer_id in (1,3,7,4,8);
+
+show tables;
+
+select * from products;
+
+select brand from products limit 3;
+
+select brand, product_name from products order by price asc limit 5 offset 2;
