@@ -4,7 +4,7 @@ show databases;
 
 create database swiggy;
 
-use swiggy;
+use practice;
 
 show tables;
 
@@ -198,3 +198,189 @@ rename table swiggy.stores to practice.stores;
 
 use practice;
 show tables;
+
+-- Use functions like COUNT(), SUM(), AVG(), MIN(), and MAX() on your tables.
+select count(*) as total_customers from customer;
+
+show tables;
+select * from orders;
+select sum(total_amount) as amount_collected from orders;
+
+select avg(total_amount) as avg_amt_collected from orders;
+
+select * from orders;
+select order_status, sum(total_amount) as total_sales from orders group by order_status;
+
+select * from orders;
+select payment_status, avg(total_amount) as average_amount from orders group by payment_status;
+
+show tables;
+select * from orders;
+select min(total_amount) from orders;
+select max(total_amount) from orders;
+
+-- Find the total number of registered customers.
+show tables;
+select * from customer;
+select count(customer_id) from customer;
+
+-- Calculate the total revenue earned from all orders.
+select * from orders;
+select sum(total_amount) as revenue_generated from orders;
+
+-- Find the average total amount of all delivered orders.
+show tables;
+select * from orders;
+select avg(total_amount) as avg_total_amount from orders where order_status="Delivered";
+
+
+show tables;
+
+
+-- Display the minimum and maximum total amount from the orders table.
+select * from orders;
+select max(total_amount) from orders;
+select min(total_amount) from orders;
+
+-- Find the total number of reviews submitted for each product.
+show tables;
+select * from review;
+select count(review_id) from review;
+
+-- Retrieve all orders where the order_status = 'Delivered'.
+show tables;
+select * from orders;
+select * from orders where order_status = "Delivered";
+
+-- Find all products that cost more than 200 INR.
+show tables;
+select * from orders;
+select * from orders where total_amount > 200;
+
+-- Show details of customers whose email contains 'gmail'.
+show tables;
+select * from customer;
+select * from customer where email like "%email%";	
+
+-- Find the total number of orders placed by each customer.
+show tables;
+select distinct cust_name from customer;
+
+-- Calculate the average total amount of orders for each order_status.
+select * from orders;
+select order_status, avg(total_amount) as avg_total_amt from orders group by order_status;
+
+-- Find how many products belong to each brand.
+show tables;
+select * from products;
+select category, count(product_name) as no_of_products from products group by category;
+
+-- Show the total revenue generated by each store.
+show tables;
+select * from stores;
+alter table orders add column store_id int;
+alter table orders add foreign key (store_id) references stores(store_id);
+
+update orders set store_id = 1 where order_id in (1,2);
+update orders set store_id = 2 where order_id in (3,4);
+update orders set store_id = 3 where order_id in (5,6);
+update orders set store_id = 4 where order_id in (7,8);
+update orders set store_id = 5 where order_id in (9,10);
+
+select * from stores;
+select * from orders;
+
+select s.store_name, sum(total_amount) as total_revenue from stores s join orders o on s.store_id =o.store_id
+group by s.store_name order by total_revenue desc;
+
+-- Show customers who placed more than 2 orders.
+select * from customer;
+select * from orders;
+
+select c.customer_id, c.cust_name, count(o.order_id) as total_orders
+from customer c
+join orders o on c.customer_id = o.customer_id
+group by c.customer_id, c.cust_name
+having count(o.order_id) > 2;
+
+-- Find all brands having more than 3 products listed.
+select * from products;
+select * from stocks;
+
+select brand, count(product_id) as total_products from products group by brand having count(product_id) > 3;
+
+-- Display stores that have total revenue > 500 INR.
+select * from stores;
+select * from orders;
+
+select brand, count(product_id) as total_products, round(AVG(price), 2) as avg_price, max(price) as highest_price
+from products
+group by brand
+having count(product_id) > 3
+order by total_products desc;
+
+-- Show order_status categories where average order value > 200 INR.
+
+select order_status, round(avg(total_amount), 2) as avg_order_value from orders
+group by order_status having avg(total_amount) > 200 order by avg_order_value desc;
+
+-- Show customers who placed more than 2 orders.
+select * from orders;
+select * from customer;
+
+select c.customer_id, c.cust_name, count(o.order_id) as total_orders from customer c join orders o on c.customer_id = o.customer_id
+group by c.customer_id, c.cust_name having count(o.order_id) > 2 order by total_orders desc;
+
+-- Find all brands having more than 3 products listed.
+select brand, COUNT(product_id) AS total_products
+from products group by brand having COUNT(product_id) > 3;
+
+-- Display stores that have total revenue > 500 INR.
+select store_id, sum(total_amount) AS total_revenue
+from orders group by store_id having sum(total_amount) > 500;
+
+-- Show order_status categories where average order value > 200 INR.
+select order_status, avg(total_amount) as avg_order_value from orders
+group by order_status having avg(total_amount) > 200;
+
+-- List all orders sorted by total_amount in descending order.
+select order_id, customer_id, store_id, total_amount, order_date, order_status
+from orders order by total_amount desc;
+
+-- Show all customers sorted alphabetically by their name.
+select customer_id, cust_name, email, phone
+from customer order by cust_name asc;
+
+-- Display all products ordered by price (low to high).
+select product_id, product_name, brand, price
+from products order by price asc;
+
+-- List all riders ordered by rider_id descending.
+select rider_id, name, phone
+from riders order by rider_id desc;
+
+-- Show all customers sorted alphabetically by their name.
+select customer_id, cust_name, phone
+from customer order by cust_name asc;
+
+-- Display all products ordered by price (low to high).
+select product_id, product_name, brand, price
+from products order by price asc;
+
+-- List all riders ordered by rider_id descending.
+select rider_id, name, phone
+from riders order by rider_id desc;
+
+-- Retrieve the top 5 highest total_amount orders.
+select order_id, customer_id, store_id, total_amount, order_date, order_status
+from orders order by total_amount desc limit 5;
+
+-- Display top 3 most expensive products.
+select product_id, product_name, brand, price
+from products order by price desc limit 3;
+
+-- Find all orders where store_id IN (1, 3, 5).
+select * from orders where store_id in (1, 3, 5);
+
+-- Retrieve customers whose customer_id IN (2, 4, 6, 8).
+select * from customer where customer_id in (2,4,6,8);
