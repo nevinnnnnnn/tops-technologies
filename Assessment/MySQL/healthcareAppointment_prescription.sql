@@ -128,9 +128,103 @@ insert into prescriptions (app_id, medicine, dosage_mg) values
 (19, 'Dexamethasone', '4 mg once daily for 3 days'),
 (20, 'Vitamin D3', '60000 IU once weekly for 8 weeks');
  
+insert into appointments (patient_id, doctor_id, app_date)
+values
+(1, 3, '2025-11-06 10:00:00'),
+(1, 3, '2025-11-10 09:30:00'),
+(1, 3, '2025-11-15 11:00:00');
+
  
  show tables;
  select * from appointments;
  select * from doctors;
  select * from patients;
  select * from prescriptions;
+ 
+ -- Find doctors with the most appointments in the last 30 days.
+ select d.doctor_id, d.name, count(a.app_id) as total_appointments from doctors d
+inner join appointments a on d.doctor_id = a.doctor_id
+where a.app_date >= now() - interval 30 day
+group by d.doctor_id, d.name
+order by total_appointments desc;
+
+-- Count patients per department.
+select d.department, count(distinct a.patient_id) as total_patients from doctors d
+inner join appointments a on d.doctor_id = a.doctor_id
+group by d.department
+order by total_patients desc;
+
+-- Identify the most prescribed medicine overall.
+select medicine, count(*) as total_prescribed from prescriptions
+group by medicine
+order by total_prescribed desc
+LIMIT 1;
+
+-- List patients who visited more than 2 departments.
+select p.patient_id, p.name, count(distinct d.department) as dept_count from patients p
+inner join appointments a on p.patient_id = a.patient_id inner join doctors d on a.doctor_id = d.doctor_id
+group by p.patient_id, p.name
+having dept_count > 2;
+
+-- Calculate the average number of appointments per patient.
+select avg(app_count) as avg_appointments_per_patient
+from (select patient_id, COUNT(*) as app_count from appointments group by patient_id) as t;
+
+-- List doctors who have prescribed more than 5 different medicines.
+select d.doctor_id, d.name, count(distinct pr.medicine) as unique_meds from doctors d
+inner join appointments a on d.doctor_id = a.doctor_id
+inner join prescriptions pr on a.app_id = pr.app_id
+group by d.doctor_id, d.name
+having unique_meds > 5;
+
+-- Find the top 3 most commonly prescribed dosages for "Paracetamol".
+select dosage_mg, count(*) as usage_count from prescriptions where medicine = 'Paracetamol'
+group by dosage_mg
+order by usage_count desc
+limit 3;
+
+-- Calculate the average time between appointments for each patient.
+SELECT 
+    p.patient_id,
+    p.name,
+    SEC_TO_TIME(
+        AVG(
+            TIME_TO_SEC(
+                TIMEDIFF(next_app.next_app_date, curr.app_date)
+            )
+        )
+    ) AS avg_time_between_appointments
+FROM appointments curr
+JOIN (
+    SELECT 
+        a1.patient_id,
+        a1.app_date AS curr_app_date,
+        MIN(a2.app_date) AS next_app_date
+    FROM appointments a1
+    JOIN appointments a2 
+        ON a1.patient_id = a2.patient_id
+       AND a2.app_date > a1.app_date
+    GROUP BY a1.patient_id, a1.app_date
+) AS next_app
+    ON next_app.patient_id = curr.patient_id
+   AND next_app.curr_app_date = curr.app_date
+JOIN patients p 
+    ON p.patient_id = curr.patient_id
+GROUP BY p.patient_id, p.name
+ORDER BY p.patient_id;
+
+-- Identify patients with appointments across at least 3 different months
+select p.patient_id, p.name, count(distinct month(a.app_date)) as month_count from patients p
+inner join appointments a on p.patient_id = a.patient_id
+group by p.patient_id, p.name
+having month_count >= 3;
+
+-- Find the department with the highest number of unique patients.
+select d.department, count(distinct a.patient_id) as unique_patients from doctors d
+inner join appointments a on d.doctor_id = a.doctor_id
+group by d.department
+order by unique_patients desc
+limit 1;
+ 
+ 
+ 

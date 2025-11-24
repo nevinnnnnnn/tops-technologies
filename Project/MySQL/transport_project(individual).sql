@@ -137,4 +137,18 @@ select sum(total_fare) as total_revenue from prices;
 select avg(total_fare) as avg_revenue from prices;
 select max(total_fare) as max_amt, min(total_fare) as min_amt from prices;
 
+-- 21 - 11 - 2025
+
+-- windows function.
+-- row no, rank, dense function
+
+use practice;
+show tables;
+select * from action_log;
+
+
+
+
+-- data import and export
+-- server --> data import or data export ---> dump for export and import for 
 
