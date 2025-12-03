@@ -88,14 +88,14 @@ set CompanyName = 'Urban Outfitters'
 where CompanyName = 'Urban Outfitters, Inc.';
 
 -- 6) In ContactEmployee table, the statement that removes Dianne Connor’s contact event with Jack Lee (one statement).
-show tables;
-select * from contact;
 delete ce from ContactEmployee ce
 join Contact c on ce.ContactID = c.ContactID
 join Employee e on ce.EmployeeID = e.EmployeeID
-where c.Notes = 'Dianne Connor'
+where c.FirstName = 'Dianne'
+and c.LastName = 'Connor'
 and e.FirstName = 'Jack'
 and e.LastName = 'Lee';
+
 
 -- 7) Write the SQL SELECT query that displays the names of the employees that have contacted Toll Brothers (one statement). Run the SQL SELECT query in MySQL Workbench. Copy the results below as well. 
 select distinct e.FirstName, e.LastName from Employee e
